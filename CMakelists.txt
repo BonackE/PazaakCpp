@@ -1,0 +1,52 @@
+cmake_minimum_required(VERSION 3.0)
+project(mygame)
+set(SDL2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/sdl2)
+set(SDL2_INCLUDE ${SDL2_DIR}/include)
+set(SDL2_BIN ${SDL2_DIR}/bin)
+set(SDL2_LIB ${SDL2_DIR}/lib)
+set(GLEW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glew)
+set(GLEW_INCLUDE ${GLEW_DIR}/include)
+set(GLEW_BIN ${GLEW_DIR}/bin)
+set(GLEW_LIB ${GLEW_DIR}/lib)
+set(SOURCES "src/Main.cpp"
+		"src/PazaakMain.cpp")
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
+
+set(IMGUI "${IMGUI_DIR}/imgui.cpp"
+		"${IMGUI_DIR}/imgui_draw.cpp"
+		"${IMGUI_DIR}/imgui_tables.cpp"
+		"${IMGUI_DIR}/imgui_widgets.cpp"
+		"${IMGUI_DIR}/imgui_impl_opengl3.cpp"
+		"${IMGUI_DIR}/imgui_impl_sdl2.cpp"
+		"${IMGUI_DIR}/imgui_impl_win32.cpp")
+# Create an option to switch between a system sdl library and a vendored sdl library
+find_package(OpenGL REQUIRED)
+add_library(SDL2::SDL2 SHARED IMPORTED)
+add_library(SDL2::SDL2main SHARED IMPORTED)
+add_library(GLEW SHARED IMPORTED)
+
+set_target_properties(SDL2::SDL2 PROPERTIES IMPORTED_LOCATION ${SDL2_BIN}/SDL2d.dll)
+set_target_properties(SDL2::SDL2 PROPERTIES IMPORTED_IMPLIB ${SDL2_LIB}/SDL2d.lib)
+set_target_properties(SDL2::SDL2main PROPERTIES IMPORTED_IMPLIB ${SDL2_LIB}/SDL2maind.lib)
+set_target_properties(SDL2::SDL2 PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SDL2_INCLUDE})
+
+set_target_properties(GLEW PROPERTIES IMPORTED_LOCATION ${GLEW_BIN}/glew32.dll)
+set_target_properties(GLEW PROPERTIES IMPORTED_IMPLIB ${GLEW_LIB}/glew32.lib)
+set_target_properties(GLEW PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${GLEW_INCLUDE})
+# Create your game executable target as usual
+add_executable(mygame WIN32 ${SOURCES} ${IMGUI})
+
+# SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
+
+    # It has an implicit dependency on SDL2 functions, so it MUST be added before SDL2::SDL2 (or SDL2::SDL2-static)
+target_link_libraries(mygame PRIVATE SDL2::SDL2main)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${SDL2_BIN}" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>) 
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${GLEW_BIN}" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>) 
+include_directories(${IMGUI_DIR} ${OPENGL_INCLUDE_DIRS})
+# Link to the actual SDL2 library. SDL2::SDL2 is the shared SDL library, SDL2::SDL2-static is the static SDL libarary.
+target_link_libraries(mygame PUBLIC ${OPENGL_LIBRARIES} PRIVATE SDL2::SDL2 PUBLIC GLEW)
