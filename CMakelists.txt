@@ -9,7 +9,9 @@ set(GLEW_INCLUDE ${GLEW_DIR}/include)
 set(GLEW_BIN ${GLEW_DIR}/bin)
 set(GLEW_LIB ${GLEW_DIR}/lib)
 set(SOURCES "src/Main.cpp"
-		"src/PazaakMain.cpp")
+		"src/PazaakMain.cpp"
+		"src/Menu.cpp"
+		"src/Card.cpp")
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 
 set(IMGUI "${IMGUI_DIR}/imgui.cpp"

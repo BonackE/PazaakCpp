@@ -28,13 +28,26 @@ void PazaakMain::run() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
-		ImGui::Begin("Pazaak", &show_demo_window, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked
-		ImGui::Button("New Game", ImVec2(100, 50));
+		ImGui::SetNextWindowSize(ImVec2(400, 400));
+		ImGui::SetNextWindowPos(ImVec2((io.DisplaySize.x - 400) / 2.0f, (io.DisplaySize.y - 400) / 2.0f));
+		ImGui::Begin("Main Menu");
+		ImGui::Spacing();
+		if (ImGui::Button("New Game", ImVec2(360, 60))) {
+			
+			
+		}
+		if (ImGui::Button("Load Game", ImVec2(360, 60))) {
+			// Handle load game action
+		}
+		ImGui::Separator();
+		if (ImGui::Button("Quit", ImVec2(360, 60))) {
+			quit = true;
+		}
 		ImGui::End();
-		// 3. Show another simple window.
-		
 
-		// Rendering
+		
+		
+		
 		ImGui::Render();
 		glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
@@ -81,3 +94,4 @@ void PazaakMain::init(){
 
 	
 }
+
